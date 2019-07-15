@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: sample
+data:
+  log.conf: |-
+    log_format json escape=json '{"time": "$time_iso8601",'
+      '"host": "$remote_addr",'
+      '"vhost": "$host",'
+      '"user": "$remote_user",'
+      '"status": "$status",'
+      '"protocol": "$server_protocol",'
+      '"method": "$request_method",'
+      '"path": "$request_uri",'
+      '"req": "$request",'
+      '"size": "$body_bytes_sent",'
+      '"reqtime": "$request_time",'
+      '"apptime": "$upstream_response_time",'
+      '"ua": "$http_user_agent",'
+      '"forwardedfor": "$http_x_forwarded_for",'
+      '"forwardedproto": "$http_x_forwarded_proto",'
+      '"referrer": "$http_referer"}';
+  
+    access_log  /var/log/nginx/access.log json;
+
+  default.conf: |-
+    server {
+      listen       80;
+      server_name  localhost;
+  
+      #charset koi8-r;
+      #access_log  /var/log/nginx/host.access.log  main;
+  
+      location / {
+          root   /usr/share/nginx/html;
+          index  index.html index.htm;
+      }
+  
+      #error_page  404              /404.html;
+  
+      # redirect server error pages to the static page /50x.html
+      #
+      error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+          root   /usr/share/nginx/html;
+      }
+    }
